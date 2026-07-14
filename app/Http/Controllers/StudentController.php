@@ -4,17 +4,30 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Student;
+use App\Repositories\Contracts\StudentRepositoryInterface;
+use Illuminate\Support\Facades\Gate;
 
 class StudentController extends Controller
 {
+    protected StudentRepositoryInterface $students;
+
+    public function __construct(StudentRepositoryInterface $students)
+    {
+        $this->students = $students;
+    }
+
     public function index()
     {
-        $students = Student::all();
+        $students = $this->students->all();
         return view('students.index', ['students' => $students]);
     }
 
     public function store(Request $request)
     {
+        if (Gate::denies('manage-students')) {
+            abort(403, 'You are not allowed to add students.');
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'grade' => 'required|string|max:255',
@@ -22,17 +35,25 @@ class StudentController extends Controller
             'contact_number' => 'required|string|max:20',
         ]);
 
-        Student::create($validated);
+        $this->students->create($validated);
         return redirect('/students');
     }
 
     public function edit(Student $student)
     {
+        if (Gate::denies('manage-students')) {
+            abort(403, 'You are not allowed to edit students.');
+        }
+
         return view('students.edit', ['student' => $student]);
     }
 
     public function update(Request $request, Student $student)
     {
+        if (Gate::denies('manage-students')) {
+            abort(403, 'You are not allowed to edit students.');
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'grade' => 'required|string|max:255',
@@ -40,13 +61,17 @@ class StudentController extends Controller
             'contact_number' => 'required|string|max:20',
         ]);
 
-        $student->update($validated);
+        $this->students->update($student, $validated);
         return redirect('/students');
     }
 
     public function destroy(Student $student)
     {
-        $student->delete();
+        if (Gate::denies('delete-student')) {
+            abort(403, 'Only admins can delete students.');
+        }
+
+        $this->students->delete($student);
         return redirect('/students');
     }
 }

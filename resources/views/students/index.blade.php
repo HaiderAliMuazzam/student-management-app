@@ -10,6 +10,7 @@
         </ul>
     </div>
 @endif
+@can('manage-students')
         <form method="POST" action="/students" class="bg-white dark:bg-zinc-800 shadow rounded-lg p-6 mb-8 space-y-4">
             @csrf
             <div class="grid grid-cols-2 gap-4">
@@ -27,6 +28,7 @@
                 Add Student
             </button>
         </form>
+@endcan
 
         <div class="bg-white dark:bg-zinc-800 shadow rounded-lg overflow-hidden">
             <table class="w-full text-left">
@@ -36,7 +38,9 @@
                         <th class="px-4 py-3">Grade</th>
                         <th class="px-4 py-3">Subject</th>
                         <th class="px-4 py-3">Contact</th>
-                        <th class="px-4 py-3">Actions</th>
+                        @canany(['manage-students', 'delete-student'])
+                            <th class="px-4 py-3">Actions</th>
+                        @endcanany
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200 dark:divide-zinc-700">
@@ -46,21 +50,27 @@
                             <td class="px-4 py-3 text-gray-900 dark:text-white">{{ $student->grade }}</td>
                             <td class="px-4 py-3 text-gray-900 dark:text-white">{{ $student->subject }}</td>
                             <td class="px-4 py-3 text-gray-900 dark:text-white">{{ $student->contact_number }}</td>
-                            <td class="px-4 py-3">
-                                <div class="flex gap-2">
-                                    <a href="/students/{{ $student->id }}/edit"
-                                        class="text-blue-600 hover:underline text-sm font-medium">
-                                        Edit
-                                    </a>
-                                    <form method="POST" action="/students/{{ $student->id }}" onsubmit="return confirm('Delete this student?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-red-600 hover:underline text-sm font-medium">
-                                            Delete
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
+                            @canany(['manage-students', 'delete-student'])
+                                <td class="px-4 py-3">
+                                    <div class="flex gap-2">
+                                        @can('manage-students')
+                                            <a href="/students/{{ $student->id }}/edit"
+                                                class="text-blue-600 hover:underline text-sm font-medium">
+                                                Edit
+                                            </a>
+                                        @endcan
+                                        @can('delete-student')
+                                            <form method="POST" action="/students/{{ $student->id }}" onsubmit="return confirm('Delete this student?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="text-red-600 hover:underline text-sm font-medium">
+                                                    Delete
+                                                </button>
+                                            </form>
+                                        @endcan
+                                    </div>
+                                </td>
+                            @endcanany
                         </tr>
                     @endforeach
                 </tbody>
