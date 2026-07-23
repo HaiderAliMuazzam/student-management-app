@@ -1,6 +1,40 @@
 <x-layouts::app :title="'Students'">
     <div class="max-w-3xl mx-auto py-10 px-4">
-        <h1 class="text-2xl font-bold text-gray-800 dark:text-white mb-6">Students</h1>
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Students</h1>
+            @can('manage-students')
+                <a href="/students/trashed" class="text-sm text-gray-600 dark:text-zinc-300 hover:underline">
+                    View Trashed
+                </a>
+            @endcan
+        </div>
+
+        <form method="GET" action="/students" class="flex flex-wrap gap-3 mb-6">
+    <input type="text" name="search" value="{{ $filters['search'] ?? '' }}" placeholder="Search by name"
+        class="border border-gray-300 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+
+    <select name="grade" class="border border-gray-300 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white rounded-md px-3 py-2">
+        <option value="">All Grades</option>
+        @foreach ($grades as $grade)
+            <option value="{{ $grade }}" @selected(($filters['grade'] ?? '') === $grade)>{{ $grade }}</option>
+        @endforeach
+    </select>
+
+    <select name="subject" class="border border-gray-300 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white rounded-md px-3 py-2">
+        <option value="">All Subjects</option>
+        @foreach ($subjects as $subject)
+            <option value="{{ $subject }}" @selected(($filters['subject'] ?? '') === $subject)>{{ $subject }}</option>
+        @endforeach
+    </select>
+
+    <button type="submit" class="bg-gray-700 text-white px-4 py-2 rounded-md hover:bg-gray-800 transition">
+        Filter
+    </button>
+    <a href="/students" class="bg-gray-200 dark:bg-zinc-700 text-gray-800 dark:text-white px-4 py-2 rounded-md hover:bg-gray-300 transition">
+        Reset
+    </a>
+</form>
+
 @if ($errors->any())
     <div class="bg-red-100 dark:bg-red-900 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-200 px-4 py-3 rounded mb-4">
         <ul class="list-disc list-inside">
@@ -20,7 +54,7 @@
                     class="border border-gray-300 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <input type="text" name="subject" placeholder="Subject"
                     class="border border-gray-300 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <input type="text" name="contact_number" placeholder="Contact Number"
+                <input type="text" name="contact_number" placeholder="Contact Number" maxlength="15" inputmode="numeric"
                     class="border border-gray-300 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
             <button type="submit"
@@ -75,6 +109,10 @@
                     @endforeach
                 </tbody>
             </table>
+        </div>
+
+        <div class="mt-4">
+            {{ $students->links() }}
         </div>
     </div>
 </x-layouts::app>
