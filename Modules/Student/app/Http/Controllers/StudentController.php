@@ -5,6 +5,7 @@ namespace Modules\Student\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Modules\Student\Models\Student;
 use Modules\Student\Repositories\Contracts\StudentRepositoryInterface;
+use Modules\Student\Http\Requests\StudentRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
@@ -32,20 +33,9 @@ class StudentController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(StudentRequest $request)
     {
-        if (Gate::denies('manage-students')) {
-            abort(403, 'You are not allowed to add students.');
-        }
-
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'grade' => 'required|string|max:255',
-            'subject' => 'required|string|max:255',
-            'contact_number' => 'required|string|max:15',
-        ]);
-
-        $this->students->create($validated);
+        $this->students->create($request->validated());
 
         return redirect('/students');
     }
@@ -59,20 +49,9 @@ class StudentController extends Controller
         return view('student::edit', ['student' => $student]);
     }
 
-    public function update(Request $request, Student $student)
+    public function update(StudentRequest $request, Student $student)
     {
-        if (Gate::denies('manage-students')) {
-            abort(403, 'You are not allowed to edit students.');
-        }
-
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'grade' => 'required|string|max:255',
-            'subject' => 'required|string|max:255',
-            'contact_number' => 'required|string|max:15',
-        ]);
-
-        $this->students->update($student, $validated);
+        $this->students->update($student, $request->validated());
 
         return redirect('/students');
     }
