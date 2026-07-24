@@ -18,6 +18,7 @@ class EnrollmentController extends Controller
     public function index()
     {
         $enrollments = $this->enrollments->all();
+
         return view('enrollments.index', ['enrollments' => $enrollments]);
     }
 
@@ -28,6 +29,7 @@ class EnrollmentController extends Controller
         ]);
 
         $this->enrollments->create($validated);
+
         return redirect('/enrollments');
     }
 
@@ -38,12 +40,14 @@ class EnrollmentController extends Controller
         ]);
 
         $this->enrollments->update($enrollment, $validated);
+
         return redirect('/enrollments');
     }
 
     public function destroy(Enrollment $enrollment)
     {
         $this->enrollments->delete($enrollment);
+
         return redirect('/enrollments');
     }
 }

@@ -21,6 +21,7 @@ class TeacherRepository implements TeacherRepositoryInterface
     public function update(Teacher $teacher, array $data): Teacher
     {
         $teacher->update($data);
+
         return $teacher;
     }
 

@@ -18,6 +18,7 @@ class CourseController extends Controller
     public function index()
     {
         $courses = $this->courses->all();
+
         return view('courses.index', ['courses' => $courses]);
     }
 
@@ -28,6 +29,7 @@ class CourseController extends Controller
         ]);
 
         $this->courses->create($validated);
+
         return redirect('/courses');
     }
 
@@ -38,12 +40,14 @@ class CourseController extends Controller
         ]);
 
         $this->courses->update($course, $validated);
+
         return redirect('/courses');
     }
 
     public function destroy(Course $course)
     {
         $this->courses->delete($course);
+
         return redirect('/courses');
     }
 }

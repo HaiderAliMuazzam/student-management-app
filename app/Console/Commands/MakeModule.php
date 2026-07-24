@@ -30,15 +30,15 @@ class MakeModule extends Command
         $this->makeView($plural);
 
         $this->info("Module {$name} scaffolded successfully!");
-        $this->warn("Remember to: bind the repository in AppServiceProvider, add routes, and run migrations.");
+        $this->warn('Remember to: bind the repository in AppServiceProvider, add routes, and run migrations.');
     }
 
     protected function makeModel(string $name): void
-{
-    $this->call('make:model', [
-        'name' => $name,
-    ]);
-}
+    {
+        $this->call('make:model', [
+            'name' => $name,
+        ]);
+    }
 
     protected function makeMigration(string $name, string $table): void
     {
@@ -77,7 +77,8 @@ PHP;
     {
         $path = database_path("factories/{$name}Factory.php");
         if (File::exists($path)) {
-            $this->warn("Factory already exists, skipping.");
+            $this->warn('Factory already exists, skipping.');
+
             return;
         }
 
@@ -113,13 +114,11 @@ PHP;
         $path = app_path("Repositories/Contracts/{$name}RepositoryInterface.php");
 
         if (File::exists($path)) {
-    $this->warn("Interface already exists, skipping.");
-    return;
-}
+            $this->warn('Interface already exists, skipping.');
 
+            return;
+        }
 
-
-        
         $stub = <<<PHP
 <?php
 
@@ -148,10 +147,10 @@ PHP;
         $var = $this->camel($name);
 
         if (File::exists($path)) {
-    $this->warn("Repository already exists, skipping.");
-    return;
-}
+            $this->warn('Repository already exists, skipping.');
 
+            return;
+        }
 
         $stub = <<<PHP
 <?php
@@ -197,8 +196,9 @@ PHP;
         $var = $this->camel($name);
         $view = Str::plural(Str::snake($name));
 
-        if (File:: exists($path)) {
-            $this ->warn ("Controller already exists,skipping.");
+        if (File::exists($path)) {
+            $this->warn('Controller already exists,skipping.');
+
             return;
         }
 
@@ -264,8 +264,9 @@ PHP;
         File::ensureDirectoryExists($dir);
         $path = "{$dir}/index.blade.php";
 
-        if (File::exists ($path)) {
-            $this -> warn ("View already exists, skipping.");
+        if (File::exists($path)) {
+            $this->warn('View already exists, skipping.');
+
             return;
         }
         $stub = <<<BLADE

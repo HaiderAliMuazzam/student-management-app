@@ -21,6 +21,7 @@ class EnrollmentRepository implements EnrollmentRepositoryInterface
     public function update(Enrollment $enrollment, array $data): Enrollment
     {
         $enrollment->update($data);
+
         return $enrollment;
     }
 

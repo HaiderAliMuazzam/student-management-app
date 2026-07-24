@@ -21,6 +21,7 @@ class CourseRepository implements CourseRepositoryInterface
     public function update(Course $course, array $data): Course
     {
         $course->update($data);
+
         return $course;
     }
 

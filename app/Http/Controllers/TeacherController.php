@@ -18,6 +18,7 @@ class TeacherController extends Controller
     public function index()
     {
         $teachers = $this->teachers->all();
+
         return view('teachers.index', ['teachers' => $teachers]);
     }
 
@@ -28,6 +29,7 @@ class TeacherController extends Controller
         ]);
 
         $this->teachers->create($validated);
+
         return redirect('/teachers');
     }
 
@@ -38,12 +40,14 @@ class TeacherController extends Controller
         ]);
 
         $this->teachers->update($teacher, $validated);
+
         return redirect('/teachers');
     }
 
     public function destroy(Teacher $teacher)
     {
         $this->teachers->delete($teacher);
+
         return redirect('/teachers');
     }
 }
