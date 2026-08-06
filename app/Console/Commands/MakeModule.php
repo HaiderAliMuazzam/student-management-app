@@ -8,19 +8,27 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
+// Defines the Artisan command signature: php artisan make:module {name}
 #[Signature('make:module {name}')]
+// Command description displayed in `php artisan list`
 #[Description('Scaffold a full module: model, migration, controller, factory, repository, interface, and a basic view.')]
 class MakeModule extends Command
 {
+    /**
+     * Execute the console command.
+     * Entry point that orchestrates the scaffolding process step-by-step.
+     */
     public function handle()
     {
-        $name = Str::studly($this->argument('name'));
-        $lower = Str::camel($name);
-        $plural = Str::plural($lower);
-        $table = Str::snake(Str::plural($name));
+        // Format the module name into common string casing variations needed for filenames, tables, and variables
+        $name = Str::studly($this->argument('name'));   // e.g., "StudentGrade"
+        $lower = Str::camel($name);                     // e.g., "studentGrade"
+        $plural = Str::plural($lower);                  // e.g., "studentGrades"
+        $table = Str::snake(Str::plural($name));        // e.g., "student_grades"
 
         $this->info("Scaffolding module: {$name}");
 
+        // Run generators sequentially
         $this->makeModel($name);
         $this->makeMigration($name, $table);
         $this->makeFactory($name);
@@ -33,6 +41,9 @@ class MakeModule extends Command
         $this->warn('Remember to: bind the repository in AppServiceProvider, add routes, and run migrations.');
     }
 
+    /**
+     * Generates the Eloquent Model file using Laravel's built-in Artisan command.
+     */
     protected function makeModel(string $name): void
     {
         $this->call('make:model', [
@@ -40,6 +51,9 @@ class MakeModule extends Command
         ]);
     }
 
+    /**
+     * Generates a database migration file in database/migrations/ with a basic schema stub.
+     */
     protected function makeMigration(string $name, string $table): void
     {
         $timestamp = date('Y_m_d_His');
@@ -73,6 +87,9 @@ PHP;
         $this->line("Created Migration: {$path}");
     }
 
+    /**
+     * Generates an Eloquent Factory in database/factories/ for testing and seeding.
+     */
     protected function makeFactory(string $name): void
     {
         $path = database_path("factories/{$name}Factory.php");
@@ -108,6 +125,10 @@ PHP;
         $this->line("Created Factory: {$path}");
     }
 
+    /**
+     * Creates the Repository Interface in app/Repositories/Contracts/
+     * Defines the standard CRUD method signatures.
+     */
     protected function makeRepositoryInterface(string $name): void
     {
         File::ensureDirectoryExists(app_path('Repositories/Contracts'));
@@ -140,6 +161,10 @@ PHP;
         $this->line("Created Interface: {$path}");
     }
 
+    /**
+     * Creates the Repository implementation class in app/Repositories/
+     * Implements the CRUD interface using Eloquent methods.
+     */
     protected function makeRepository(string $name): void
     {
         File::ensureDirectoryExists(app_path('Repositories'));
@@ -190,6 +215,10 @@ PHP;
         $this->line("Created Repository: {$path}");
     }
 
+    /**
+     * Creates a Controller in app/Http/Controllers/ pre-injected with the Repository Interface
+     * and boilerplate index, store, update, and destroy actions.
+     */
     protected function makeController(string $name): void
     {
         $path = app_path("Http/Controllers/{$name}Controller.php");
@@ -258,6 +287,10 @@ PHP;
         $this->line("Created Controller: {$path}");
     }
 
+    /**
+     * Creates a basic index Blade view under resources/views/{plural}/ index.blade.php
+     * wrapped in the layout component.
+     */
     protected function makeView(string $plural): void
     {
         $dir = resource_path("views/{$plural}");
@@ -282,6 +315,9 @@ BLADE;
         $this->line("Created View: {$path}");
     }
 
+    /**
+     * Utility helper method to format a string into camelCase.
+     */
     protected function camel(string $name): string
     {
         return Str::camel($name);

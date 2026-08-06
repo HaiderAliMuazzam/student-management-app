@@ -2,11 +2,16 @@
 
 namespace Modules\Student\Providers;
 
-use Nwidart\Modules\Support\ModuleServiceProvider;
-use Illuminate\Console\Scheduling\Schedule;
 use Modules\Student\Repositories\Contracts\StudentRepositoryInterface;
 use Modules\Student\Repositories\StudentRepository;
+use Nwidart\Modules\Support\ModuleServiceProvider;
 
+/**
+ * Class StudentServiceProvider
+ *
+ * Bootstraps module resources, sub-providers, and registers container dependency 
+ * bindings for the Student domain (maps StudentRepositoryInterface to StudentRepository).
+ */
 class StudentServiceProvider extends ModuleServiceProvider
 {
     /**
@@ -20,16 +25,9 @@ class StudentServiceProvider extends ModuleServiceProvider
     protected string $nameLower = 'student';
 
     /**
-     * Command classes to register.
+     * Sub-providers to automatically register for this module.
      *
-     * @var string[]
-     */
-    // protected array $commands = [];
-
-    /**
-     * Provider classes to register.
-     *
-     * @var string[]
+     * @var array<int, string>
      */
     protected array $providers = [
         EventServiceProvider::class,
@@ -37,12 +35,15 @@ class StudentServiceProvider extends ModuleServiceProvider
     ];
 
     /**
-     * Register any application services.
+     * Register application services, container bindings, and sub-providers.
+     *
+     * @return void
      */
     public function register(): void
     {
         parent::register();
 
+        // Bind StudentRepositoryInterface contract to concrete StudentRepository implementation
         $this->app->bind(
             StudentRepositoryInterface::class,
             StudentRepository::class
@@ -50,12 +51,15 @@ class StudentServiceProvider extends ModuleServiceProvider
     }
 
     /**
-     * Define module schedules.
-     * 
-     * @param $schedule
+     * Bootstrap module translation and view resources.
+     *
+     * @return void
      */
-    // protected function configureSchedules(Schedule $schedule): void
-    // {
-    //     $schedule->command('inspire')->hourly();
-    // }
+    public function boot(): void
+    {
+        parent::boot();
+
+        // Register module translations under the 'student' namespace
+        $this->loadTranslationsFrom(module_path($this->name, 'lang'), $this->nameLower);
+    }
 }

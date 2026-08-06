@@ -1,14 +1,14 @@
 <?php
-
 namespace App\Providers;
-
 use Carbon\CarbonImmutable;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
-
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -18,34 +18,30 @@ class AppServiceProvider extends ServiceProvider
     {
         //
     }
-
     /**
      * Bootstrap any application services.
      */
     public function boot(): void
     {
-        $this->configureDefaults();
+        Event::listen(Registered::class, SendEmailVerificationNotification::class);
 
+        $this->configureDefaults();
         Gate::define('delete-student', function ($user) {
             return $user->role === 'admin';
         });
-
         Gate::define('manage-students', function ($user) {
             return in_array($user->role, ['admin', 'teacher']);
         });
     }
-
     /**
      * Configure default behaviors for production-ready applications.
      */
     protected function configureDefaults(): void
     {
         Date::use(CarbonImmutable::class);
-
         DB::prohibitDestructiveCommands(
             app()->isProduction(),
         );
-
         Password::defaults(fn (): ?Password => app()->isProduction()
             ? Password::min(12)
                 ->mixedCase()

@@ -1,3 +1,9 @@
 {
-    "Student": true
+    "Student": true,
+    "Finance": true,
+    "Subject": true,
+    "Grade": true,
+    "Announcement": true,
+    "Attendance": true,
+    "Attachment": true
 }
